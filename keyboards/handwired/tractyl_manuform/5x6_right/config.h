@@ -21,13 +21,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define ROTATIONAL_TRANSFORM_ANGLE  -25
 #define POINTING_DEVICE_INVERT_X
 
-#define DYNAMIC_KEYMAP_LAYER_COUNT  16
+#define DYNAMIC_KEYMAP_LAYER_COUNT  5
 #define LAYER_STATE_16BIT
-
 
 /* disable action features */
 //#define NO_ACTION_LAYER
 //#define NO_ACTION_TAPPING
-//#define NO_ACTION_ONESHOT
+#define NO_ACTION_ONESHOT
+#define DISABLE_LEADER
+
+/* disable debug for catalina space */
+#ifndef NO_DEBUG
+#define NO_DEBUG
+#endif // !NO_DEBUG
+#if !defined(NO_PRINT) && !defined(CONSOLE_ENABLE)
+#define NO_PRINT
+#endif // !NO_PRINT
 
 #define POINTING_DEVICE_RIGHT
