@@ -30,10 +30,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SPLIT_WATCHDOG_ENABLE
 
 // Tapping Toggle feature TT(layer)
-#define TAPPING_TOGGLE 2
+#define TAPPING_TOGGLE 3
 
 // Trackball settings
-#define CHARYBDIS_MINIMUM_DEFAULT_DPI 800 // The minimum sensitivity in default mode.
+#define CHARYBDIS_MINIMUM_DEFAULT_DPI 1000 // The minimum sensitivity in default mode.
 // #define CHARYBDIS_DEFAULT_DPI_CONFIG_STEP 200 // Change of the sensitivity in cursor mode each time POINTER_DEFAULT_DPI_FORWARD/ REVERSE is pressed.
 #define CHARYBDIS_MINIMUM_SNIPING_DPI 400 // The sensitivity in sniping mode.
 // #define CHARYBDIS_SNIPING_DPI_CONFIG_STEP 200 // Change of the pointers sensitivity in sniping mode each time POINTER_SNIPING_DPI_FORWARD/ REVERSE is pressed.
