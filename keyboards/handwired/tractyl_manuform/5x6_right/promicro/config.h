@@ -25,8 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define POINTING_DEVICE_CS_PIN B6
 
 // For USB C Pro Micro
-// #define SPLIT_USB_DETECT
-// #define SPLIT_USB_TIMEOUT 2500
+#define SPLIT_USB_DETECT
+#define SPLIT_USB_TIMEOUT 2500
 #define SPLIT_WATCHDOG_ENABLE
 
 // Tapping Toggle feature TT(layer)
