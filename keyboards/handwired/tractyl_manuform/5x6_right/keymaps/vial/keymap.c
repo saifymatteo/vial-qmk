@@ -30,13 +30,13 @@
             case KC_F13:
                 // When keycode is pressed
                 if (record->event.pressed) {
-                    if (currentOs == OS_MACOS) {
-                        // Open Mission Control
-                        register_code(KC_MCTL);
-                    } else {
+                    if (currentOs == OS_WINDOWS) {
                         // Windows | Open Task View
                         register_code(KC_LGUI);
                         register_code(KC_TAB);
+                    } else {
+                        // MacOS | Open Mission Control
+                        register_code(0xc1);
                     }
                 }
                 clear_keyboard(); // Clear all modifiers and keys currently pressed
