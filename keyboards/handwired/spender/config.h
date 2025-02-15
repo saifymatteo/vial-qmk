@@ -18,7 +18,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#define DEBUG_LED_PIN   D6
-
 // Tapping Toggle feature TT(layer)
 #define TAPPING_TOGGLE 3

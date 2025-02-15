@@ -23,13 +23,6 @@
   "diode_direction": "COL2ROW",
   "processor": "at90usb1286",
   "bootloader": "halfkay",
-  "ws2812": {
-      "pin": "D7"
-  },
-  "rgblight": {
-      "led_count": 20,
-      "max_brightness": 80
-  },
   "layouts": {
     "LAYOUT": {
       "layout": [
