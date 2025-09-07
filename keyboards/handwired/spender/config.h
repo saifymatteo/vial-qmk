@@ -23,4 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Audio features
 #define AUDIO_PIN B6 // Pin for audio output
-#define AUDIO_CLICKY // Keypress sound
+#define AUDIO_DAC_SAMPLE_MAX 4095U
+
+// Audio Clicky | Keypress Sound
+#define AUDIO_CLICKY
+#define AUDIO_CLICKY_FREQ_RANDOMNESS 1.0f
