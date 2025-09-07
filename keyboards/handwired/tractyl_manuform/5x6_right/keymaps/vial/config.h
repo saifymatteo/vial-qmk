@@ -6,17 +6,3 @@
 
 #define VIAL_UNLOCK_COMBO_ROWS { 0, 0 }
 #define VIAL_UNLOCK_COMBO_COLS { 0, 1 }
-
-#undef DYNAMIC_KEYMAP_LAYER_COUNT
-#define DYNAMIC_KEYMAP_LAYER_COUNT 4
-
-#define NO_ACTION_ONESHOT
-#define DISABLE_LEADER
-
-/* disable debug for catalina space */
-#ifndef NO_DEBUG
-#define NO_DEBUG
-#endif // !NO_DEBUG
-#if !defined(NO_PRINT) && !defined(CONSOLE_ENABLE)
-#define NO_PRINT
-#endif // !NO_PRINT

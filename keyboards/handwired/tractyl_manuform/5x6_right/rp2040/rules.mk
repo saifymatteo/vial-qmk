@@ -1,0 +1,11 @@
+OS_DETECTION_ENABLE = yes
+
+AUDIO_ENABLE = yes
+AUDIO_DRIVER = pwm_hardware
+
+SERIAL_DRIVER = vendor
+
+BOOTLOADER = rp2040
+
+# Trackball
+POINTING_DEVICE_DRIVER = pmw3360
