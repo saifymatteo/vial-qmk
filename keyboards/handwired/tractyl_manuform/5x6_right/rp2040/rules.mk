@@ -1,5 +1,7 @@
 OS_DETECTION_ENABLE = yes
 
+DEFERRED_EXEC_ENABLE = yes
+
 AUDIO_ENABLE = yes
 AUDIO_DRIVER = pwm_hardware
 
