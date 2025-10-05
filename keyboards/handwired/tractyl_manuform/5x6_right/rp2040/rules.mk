@@ -1,13 +1,25 @@
+# Bootloader
+BOOTLOADER = rp2040
+
+# Driver
+SERIAL_DRIVER = vendor
+I2C_DRIVER_REQUIRED = yes
+SPI_DRIVER_REQUIRED = yes
+
+# OS Detection
 OS_DETECTION_ENABLE = yes
 
+# Deferred Callback
 DEFERRED_EXEC_ENABLE = yes
 
+# Audio
 AUDIO_ENABLE = yes
 AUDIO_DRIVER = pwm_hardware
 
-SERIAL_DRIVER = vendor
-
-BOOTLOADER = rp2040
-
 # Trackball
 POINTING_DEVICE_DRIVER = pmw3360
+
+# OLED
+OLED_ENABLE = yes
+OLED_DRIVER = ssd1306
+OLED_TRANSPORT = i2c

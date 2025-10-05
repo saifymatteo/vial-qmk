@@ -30,6 +30,16 @@ Copyright 2025 saifymatteo <dev@saifulmashuri.com>
 // Serial using USART | Half Duplex
 #define SERIAL_USART_TX_PIN GP12
 
+// I2C configuration (for OLED)
+#define I2C1_SCL_PIN GP27
+#define I2C1_SDA_PIN GP26
+
+// OLED configuration
+#define SPLIT_OLED_ENABLE
+#define OLED_BRIGHTNESS 255 // from 0 to 255
+#define OLED_DISPLAY_WIDTH 128
+#define OLED_DISPLAY_HEIGHT 32
+
 // Deferred Callbacks
 #define MAX_DEFERRED_EXECUTORS 16
 
