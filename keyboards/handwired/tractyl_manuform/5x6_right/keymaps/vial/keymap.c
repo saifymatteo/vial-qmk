@@ -1,31 +1,37 @@
-/* Copyright 2020 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/*
+ * Copyright 2025 saifymatteo <dev@saifulmashuri.com>
  */
 
 #include QMK_KEYBOARD_H
+#include "os_detection.h"
 
 #if __has_include("keymap.h")
 #    include "keymap.h"
 #endif
 
-#ifdef OS_DETECTION_ENABLE
-#    include "os_detection.h"
-
 os_variant_t current_os = OS_UNSURE;
 
+uint32_t cancel_haptic(uint32_t trigger_time, void *cb_arg) {
+    gpio_write_pin_low(GP13);
+    return 0;
+}
+
+uint32_t custom_os_settings(uint32_t trigger_time, void *cb_arg) {
+    current_os        = detected_host_os();
+    uint16_t retry_ms = 500;
+
+    if (current_os != OS_UNSURE) {
+        retry_ms = 0;
+    }
+
+    return retry_ms;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // Haptic trigger, immediate vibrate with 350ms duration
+    gpio_write_pin_high(GP13);
+    defer_exec(350, cancel_haptic, NULL);
+
     switch (keycode) {
         case KC_F20:
             // When keycode is pressed
@@ -39,31 +45,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     register_code(0xc1);
                 }
             }
-            clear_keyboard(); // Clear all modifiers and keys currently pressed
+            // Clear all modifiers and keys currently pressed
+            clear_keyboard();
             return false;
     }
     return true;
 };
 
-uint32_t custom_os_settings(uint32_t trigger_time, void *cb_arg) {
-    current_os        = detected_host_os();
-    uint16_t retry_ms = 500;
-
-    if (current_os != OS_UNSURE) {
-        retry_ms = 0;
-    }
-
-    return retry_ms;
+void keyboard_pre_init_user(void) {
+    // Haptic motor PIN
+    gpio_set_pin_output(GP13);
 }
-#endif
 
 void keyboard_post_init_user(void) {
+    // Enable console debug
     debug_enable = true;
     debug_matrix = true;
 
-#if defined(OS_DETECTION_ENABLE) && defined(DEFERRED_EXEC_ENABLE)
-    defer_exec(100, custom_os_settings, NULL);
-#endif
+    // Register deferred callback for OS Detection
+    defer_exec(1000, custom_os_settings, NULL);
 }
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0] = LAYOUT_5x6_right(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_DEL, KC_TAB, KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS, KC_BSPC, KC_A, KC_R, KC_S, KC_T, KC_G, KC_M, KC_N, KC_E, KC_I, KC_O, KC_QUOT, KC_APP, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, DF(1), KC_LCTL, KC_LGUI, KC_HOME, KC_END, KC_LSFT, KC_SPC, KC_RSFT, KC_ENT, KC_LALT, KC_ENT, TT(2), TT(3), TT(3), TT(2)),

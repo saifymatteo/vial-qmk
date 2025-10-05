@@ -30,6 +30,9 @@ Copyright 2025 saifymatteo <dev@saifulmashuri.com>
 // Serial using USART | Half Duplex
 #define SERIAL_USART_TX_PIN GP12
 
+// Deferred Callbacks
+#define MAX_DEFERRED_EXECUTORS 16
+
 // Trackball | PMW3360
 #define SPI_DRIVER SPID0
 #define SPI_SCK_PIN GP18
