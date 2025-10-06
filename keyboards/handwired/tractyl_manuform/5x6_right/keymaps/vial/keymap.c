@@ -84,22 +84,21 @@ bool oled_task_user(void) {
     if (is_keyboard_master()) {
         oled_write_P(qmk_logo, false);
     } else {
-        oled_write_P(PSTR("Layer: "), false);
         switch (get_highest_layer(layer_state | default_layer_state)) {
             case 0:
-                oled_write_P(PSTR("Colemak-DH"), false);
+                oled_write_ln("Layer: Colemak-DH", false);
                 break;
             case 1:
-                oled_write_P(PSTR("QWERTY"), false);
+                oled_write_ln("Layer: QWERTY", false);
                 break;
             case 2:
-                oled_write_P(PSTR("Functions"), false);
+                oled_write_ln("Layer: Functions", false);
                 break;
             case 3:
-                oled_write_P(PSTR("Navigations"), false);
+                oled_write_ln("Layer: Navigations", false);
                 break;
             default:
-                oled_write_ln_P(PSTR("Undefined"), false);
+                oled_write_ln("Layer: Undefined", false);
         }
     }
 
