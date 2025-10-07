@@ -100,6 +100,23 @@ bool oled_task_user(void) {
             default:
                 oled_write_ln("Layer: Undefined", false);
         }
+        switch (current_os) {
+            case OS_LINUX:
+                oled_write_ln("   OS: Linux", false);
+                break;
+            case OS_WINDOWS:
+                oled_write_ln("   OS: Windows", false);
+                break;
+            case OS_MACOS:
+                oled_write_ln("   OS: MacOS", false);
+                break;
+            case OS_IOS:
+                oled_write_ln("   OS: iOS", false);
+                break;
+            case OS_UNSURE:
+                oled_write_ln("   OS: Undefined", false);
+                break;
+        }
     }
 
     return false;
