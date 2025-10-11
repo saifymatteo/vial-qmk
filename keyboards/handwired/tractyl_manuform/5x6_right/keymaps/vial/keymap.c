@@ -60,17 +60,17 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 // ---------------- OLED --------------------------------------------------------------
 
-// Keyboard Matrix.
-// Taken from [github](https://github.com/vuon0029/qmk/tree/master/keyboards/mechwild/mercutio/keymaps/dracutio)
+// Keyboard Matrix. Taken from [github](https://github.com/vuon0029/qmk/tree/master/keyboards/mechwild/mercutio/keymaps/dracutio)
 
+// WPM and row/column texts
 char text_wpm[10];
 char text_row_col[13];
 
-/* Matrix display is 19 x 9 pixels */
+// Keyboard Matrix display
 #define MATRIX_DISPLAY_X 49
 #define MATRIX_DISPLAY_Y 25
 
-// unit
+// Keyboard Unit size
 #define GAP 2
 #define CUBE_NUMBER 4
 
@@ -80,6 +80,11 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     }
 
     return rotation;
+}
+
+// Sync actions from master to slave
+bool should_process_keypress(void) {
+    return true;
 }
 
 bool oled_task_user(void) {
@@ -134,41 +139,43 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     gpio_write_pin_high(GP13);
     defer_exec(350, cancel_haptic, NULL);
 
-    // Row and column swapped based on config
-    // - Max row = 12
-    // - Max column = 6
-    uint8_t row    = record->event.key.row;
-    uint8_t column = record->event.key.col;
+    if (is_keyboard_master()) {
+        // Row and column swapped based on config
+        // - Max row = 12
+        // - Max column = 6
+        uint8_t row    = record->event.key.row;
+        uint8_t column = record->event.key.col;
 
-    // Render Row and Column text
-    sprintf(text_row_col, "R-C: %d-%d", row, column);
-    oled_set_cursor(10, 1);
-    oled_write_ln(text_row_col, false);
+        // Render Row and Column text
+        sprintf(text_row_col, "R-C: %d-%d", row, column);
+        oled_set_cursor(10, 1);
+        oled_write_ln(text_row_col, false);
 
-    // Render keyboard state
-    led_t state = host_keyboard_led_state();
-    oled_set_cursor(10, 3);
-    if (state.caps_lock) {
-        oled_write_ln("Caps Lock", false);
-    } else if (state.num_lock) {
-        oled_write_ln("Num Lock", false);
-    } else if (state.scroll_lock) {
-        oled_write_ln("Scroll Lck", false);
-    } else if (state.compose) {
-        oled_write_ln("Compose", false);
-    } else if (state.kana) {
-        oled_write_ln("Kana", false);
-    } else {
-        oled_advance_page(true);
-    }
+        // Render keyboard state
+        led_t state = host_keyboard_led_state();
+        oled_set_cursor(10, 3);
+        if (state.caps_lock) {
+            oled_write_ln("Caps Lock", false);
+        } else if (state.num_lock) {
+            oled_write_ln("Num Lock", false);
+        } else if (state.scroll_lock) {
+            oled_write_ln("Scroll Lck", false);
+        } else if (state.compose) {
+            oled_write_ln("Compose", false);
+        } else if (state.kana) {
+            oled_write_ln("Kana", false);
+        } else {
+            oled_advance_page(true);
+        }
 
-    // Render keyboard tap, switch back the row/column on master side
-    bool is_master = row > 5;
-    row            = is_master ? row - 6 : row;
-    column         = is_master ? column + 6 : column;
-    for (uint8_t x = (CUBE_NUMBER * row) + GAP; x < CUBE_NUMBER * (row + 1); x++) {
-        for (uint8_t y = (CUBE_NUMBER * column) + GAP; y < CUBE_NUMBER * (column + 1); y++) {
-            oled_write_pixel(y, x, record->event.pressed);
+        // Render keyboard tap, switch back the row/column on master side
+        bool is_master = row >= 6;
+        row            = is_master ? row - 6 : row;
+        column         = is_master ? column + 6 : column;
+        for (uint8_t x = (CUBE_NUMBER * row) + GAP; x < CUBE_NUMBER * (row + 1); x++) {
+            for (uint8_t y = (CUBE_NUMBER * column) + GAP; y < CUBE_NUMBER * (column + 1); y++) {
+                oled_write_pixel(y, x, record->event.pressed);
+            }
         }
     }
 

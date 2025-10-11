@@ -38,6 +38,7 @@ Copyright 2025 saifymatteo <dev@saifulmashuri.com>
 #define SPLIT_OLED_ENABLE
 #define SPLIT_LAYER_STATE_ENABLE // For Layer state
 #define SPLIT_LED_STATE_ENABLE // For Caps, Num Lock state
+#define SPLIT_TRANSPORT_MIRROR // For sync master and slave key presses
 #define OLED_BRIGHTNESS 255 // from 0 to 255
 #define OLED_DISPLAY_WIDTH 128
 #define OLED_DISPLAY_HEIGHT 32
