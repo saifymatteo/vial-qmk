@@ -37,10 +37,15 @@ Copyright 2025 saifymatteo <dev@saifulmashuri.com>
 // OLED configuration
 #define SPLIT_OLED_ENABLE
 #define SPLIT_LAYER_STATE_ENABLE // For Layer state
-#define SPLIT_LED_STATE_ENABLE // For Caps, Num Lock state
-#define OLED_BRIGHTNESS 255 // from 0 to 255
+#define SPLIT_LED_STATE_ENABLE   // For Caps, Num Lock state
+#define OLED_BRIGHTNESS 255      // from 0 to 255
 #define OLED_DISPLAY_WIDTH 128
 #define OLED_DISPLAY_HEIGHT 32
+
+// Encoders
+#define ENCODER_A_PINS {GP14}
+#define ENCODER_B_PINS {GP15}
+#define ENCODER_RESOLUTION 4
 
 // Deferred Callbacks
 #define MAX_DEFERRED_EXECUTORS 16

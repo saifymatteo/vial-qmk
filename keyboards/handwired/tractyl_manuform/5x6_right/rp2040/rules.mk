@@ -19,6 +19,9 @@ AUDIO_DRIVER = pwm_hardware
 # Trackball
 POINTING_DEVICE_DRIVER = pmw3360
 
+# Encoders
+ENCODER_ENABLE = yes
+
 # OLED
 OLED_ENABLE = yes
 OLED_DRIVER = ssd1306
