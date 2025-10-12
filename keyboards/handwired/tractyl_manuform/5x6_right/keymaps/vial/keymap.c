@@ -43,6 +43,11 @@ void keyboard_post_init_user(void) {
     defer_exec(1000, custom_os_settings, NULL);
 }
 
+// Sync actions from master to slave
+bool should_process_keypress(void) {
+    return true;
+}
+
 // ---------------- LAYER --------------------------------------------------------------
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0] = LAYOUT_5x6_right(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_DEL, KC_TAB, KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS, KC_BSPC, KC_A, KC_R, KC_S, KC_T, KC_G, KC_M, KC_N, KC_E, KC_I, KC_O, KC_QUOT, KC_APP, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, DF(1), KC_LCTL, KC_LGUI, KC_HOME, KC_END, KC_LSFT, KC_SPC, KC_RSFT, KC_ENT, KC_LALT, KC_ENT, TT(2), TT(3), TT(3), TT(2)),
@@ -62,6 +67,11 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 // Keyboard Matrix. Taken from [github](https://github.com/vuon0029/qmk/tree/master/keyboards/mechwild/mercutio/keymaps/dracutio)
 // Bongo cat OLED. Taken from [github](https://github.com/nwii/oledbongocat)
+
+// Custom animation guide:
+// 1. Get a any video or gif
+// 2. To convert video to gif, use this: `ffmpeg -i <video-file> -vf "fps=10" -loop 0 <gif-output>`
+// 3. Convert from Gif. [github](https://github.com/AskMeAboutBirds/qmk-oled-animation-compressor)
 
 // WPM and row/column texts
 char text_wpm[10];
@@ -102,11 +112,6 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     }
 
     return rotation;
-}
-
-// Sync actions from master to slave
-bool should_process_keypress(void) {
-    return true;
 }
 
 bool oled_task_user(void) {
@@ -217,7 +222,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     register_code(KC_TAB);
                 } else if (current_os == OS_MACOS) {
                     // MacOS | Open Mission Control
-                    register_code(0xc1);
+                    register_code(KC_MISSION_CONTROL);
                 }
             }
             // Clear all modifiers and keys currently pressed
