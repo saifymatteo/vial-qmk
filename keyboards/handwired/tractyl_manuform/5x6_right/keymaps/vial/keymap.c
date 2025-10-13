@@ -377,8 +377,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 if (current_os == OS_WINDOWS || current_os == OS_LINUX) {
                     // Windows | Open Task View
-                    tap_code(KC_LGUI);
-                    tap_code(KC_TAB);
+                    tap_code16(LGUI(KC_TAB));
                 } else if (current_os == OS_MACOS) {
                     // MacOS | Open Mission Control
                     tap_code(KC_MISSION_CONTROL);
