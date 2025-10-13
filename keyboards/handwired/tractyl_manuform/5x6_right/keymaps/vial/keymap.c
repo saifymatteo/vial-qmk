@@ -165,9 +165,9 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             // Move cursor one word left / right || Page up / page down
             if (is_slave_left) {
                 if (clockwise) {
-                    tap_code16(LCTL(KC_RIGHT));
+                    tap_code16(current_os == OS_MACOS ? LALT(KC_RIGHT) : LCTL(KC_RIGHT));
                 } else {
-                    tap_code16(LCTL(KC_LEFT));
+                    tap_code16(current_os == OS_MACOS ? LALT(KC_LEFT) : LCTL(KC_LEFT));
                 }
             } else if (is_master_right) {
                 if (clockwise) {
