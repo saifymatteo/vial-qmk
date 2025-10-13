@@ -96,22 +96,19 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             // Windows: Alt tab (need to hold alt)
             // MacOS: Command tab (need to hold command)
             if (is_slave_left) {
+                register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
                 if (clockwise) {
                     if (!is_alt_tab_active) {
                         is_alt_tab_active = true;
-                        unregister_code(KC_LSFT);
-                        register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
                     }
                     alt_tab_timer = timer_read();
                     tap_code(KC_TAB);
                 } else {
                     if (!is_alt_shift_tab_active) {
                         is_alt_shift_tab_active = true;
-                        register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
-                        register_code(KC_LSFT);
                     }
                     alt_tab_timer = timer_read();
-                    tap_code(KC_TAB);
+                    tap_code16(LSFT(KC_TAB));
                 }
             } else if (is_master_right) {
                 if (clockwise) {
@@ -126,22 +123,19 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             // Windows: Alt tab (need to hold alt)
             // MacOS: Command tab (need to hold command)
             if (is_slave_left) {
+                register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
                 if (clockwise) {
                     if (!is_alt_tab_active) {
                         is_alt_tab_active = true;
-                        unregister_code(KC_LSFT);
-                        register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
                     }
                     alt_tab_timer = timer_read();
                     tap_code(KC_TAB);
                 } else {
                     if (!is_alt_shift_tab_active) {
                         is_alt_shift_tab_active = true;
-                        register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
-                        register_code(KC_LSFT);
                     }
                     alt_tab_timer = timer_read();
-                    tap_code(KC_TAB);
+                    tap_code16(LSFT(KC_TAB));
                 }
             } else if (is_master_right) {
                 if (clockwise) {
@@ -398,9 +392,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 void matrix_scan_user(void) {
     // ALT key hold timer
     if (is_alt_tab_active | is_alt_shift_tab_active) {
-        if (timer_elapsed(alt_tab_timer) > 300) {
+        if (timer_elapsed(alt_tab_timer) > 500) {
             unregister_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
-            unregister_code(KC_LSFT);
             is_alt_tab_active       = false;
             is_alt_shift_tab_active = false;
         }
