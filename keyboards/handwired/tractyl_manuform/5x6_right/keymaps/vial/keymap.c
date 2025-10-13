@@ -37,7 +37,9 @@ void keyboard_pre_init_user(void) {
 void keyboard_post_init_user(void) {
     // Enable console debug
     debug_enable = true;
-    debug_matrix = true;
+    // debug_matrix = true;
+    // debug_keyboard = true;
+    // debug_mouse = true;
 
     // Register deferred callback for OS Detection
     defer_exec(1000, custom_os_settings, NULL);
@@ -279,6 +281,23 @@ bool oled_task_user(void) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // Debug keycodes
     printf("Key: %s\n", get_keycode_string(keycode));
+    switch (current_os) {
+        case OS_LINUX:
+            printf("OS: Linux\n");
+            break;
+        case OS_WINDOWS:
+            printf("OS: Windows\n");
+            break;
+        case OS_MACOS:
+            printf("OS: MacOS\n");
+            break;
+        case OS_IOS:
+            printf("OS: iOS\n");
+            break;
+        case OS_UNSURE:
+            printf("OS: Undefined\n");
+            break;
+    }
 
     // Haptic trigger, immediate vibrate with 350ms duration
     gpio_write_pin_high(GP13);
