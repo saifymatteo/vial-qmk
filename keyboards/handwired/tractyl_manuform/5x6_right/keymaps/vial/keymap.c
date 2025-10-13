@@ -330,16 +330,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 if (current_os == OS_WINDOWS || current_os == OS_LINUX) {
                     // Windows | Open Task View
-                    register_code(KC_LGUI);
-                    register_code(KC_TAB);
+                    tap_code(KC_LGUI);
+                    tap_code(KC_TAB);
                 } else if (current_os == OS_MACOS) {
                     // MacOS | Open Mission Control
-                    register_code(KC_MISSION_CONTROL);
+                    tap_code(KC_MISSION_CONTROL);
                 }
             }
-            // Clear all modifiers and keys currently pressed
-            clear_keyboard();
-            return false;
+            break;
     }
     return true;
 };
