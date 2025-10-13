@@ -23,6 +23,9 @@ Copyright 2025 saifymatteo <dev@saifulmashuri.com>
 #define AUDIO_INIT_DELAY
 #define AUDIO_DAC_SAMPLE_MAX 4095U
 
+// Audio Song
+#define STARTUP_SONG SONG(USSR_ANTHEM)
+
 // Audio Clicky | Keypress Sound
 #define AUDIO_CLICKY
 #define AUDIO_CLICKY_FREQ_RANDOMNESS 1.0f
