@@ -167,12 +167,12 @@ char text_wpm[10];
 char text_row_col[13];
 
 // Keyboard Matrix display
-#define MATRIX_DISPLAY_X 49
-#define MATRIX_DISPLAY_Y 25
+#define MATRIX_DISPLAY_X 36
+#define MATRIX_DISPLAY_Y 18
 
 // Keyboard Unit size
-#define GAP 2
-#define CUBE_NUMBER 4
+#define GAP 1
+#define CUBE_NUMBER 3
 
 // Bongo cat
 #define TAP_FRAMES 2
@@ -221,12 +221,32 @@ bool oled_task_user(void) {
         }
 
         // Render WPM text
-        oled_set_cursor(10, 0);
+        oled_set_cursor(8, 0);
         sprintf(text_wpm, "WPM: %03d", get_current_wpm());
         oled_write_ln(text_wpm, false);
 
+        // Render OS
+        oled_set_cursor(8, 1);
+        switch (current_os) {
+            case OS_LINUX:
+                oled_write_ln("OS : Linux", false);
+                break;
+            case OS_WINDOWS:
+                oled_write_ln("OS : Windows", false);
+                break;
+            case OS_MACOS:
+                oled_write_ln("OS : MacOS", false);
+                break;
+            case OS_IOS:
+                oled_write_ln("OS : iOS", false);
+                break;
+            case OS_UNSURE:
+                oled_write_ln("OS : Unsure", false);
+                break;
+        }
+
         // Render Layers
-        oled_set_cursor(10, 2);
+        oled_set_cursor(8, 2);
         switch (get_highest_layer(layer_state | default_layer_state)) {
             case 0:
                 oled_write_ln("Colemak-DH", false);
@@ -272,13 +292,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         uint8_t column = record->event.key.col;
 
         // Render Row and Column text
-        sprintf(text_row_col, "R-C: %d-%d", row, column);
-        oled_set_cursor(10, 1);
+        sprintf(text_row_col, "R%02d-C%d", row, column);
+        oled_set_cursor(0, 3);
         oled_write_ln(text_row_col, false);
 
         // Render keyboard state
         led_t state = host_keyboard_led_state();
-        oled_set_cursor(10, 3);
+        oled_set_cursor(8, 3);
         if (state.caps_lock) {
             oled_write_ln("Caps Lock", false);
         } else if (state.num_lock) {
