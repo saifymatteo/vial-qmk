@@ -65,6 +65,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0] = LAYOUT_5x6_r
 
 // ---------------- ENCODER --------------------------------------------------------------
 
+// Alt (Windows) / Command (MacOS)
+// Taken from [reddit](https://www.reddit.com/r/MechanicalKeyboards/comments/s52e51/added_alttab_to_my_rotary_encoder_on_my_qmk_board/)
+bool     is_alt_tab_active       = false;
+bool     is_alt_shift_tab_active = false;
+uint16_t alt_tab_timer           = 0;
+
 // Note: current keyboard and RP2040 does not support ENCODER_MAP_ENABLE
 bool encoder_update_user(uint8_t index, bool clockwise) {
     bool is_master_right = index == 1; // Master (right) encoder
@@ -86,12 +92,26 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
     switch (get_highest_layer(layer_state | default_layer_state)) {
         case 0:
-            // Alt escape / shift alt escape || Zoom in / out
+            // Alt tab / shift alt tab || Zoom in / out
+            // Windows: Alt tab (need to hold alt)
+            // MacOS: Command tab (need to hold command)
             if (is_slave_left) {
                 if (clockwise) {
-                    tap_code16(LALT(KC_ESC));
+                    if (!is_alt_tab_active) {
+                        is_alt_tab_active = true;
+                        unregister_code(KC_LSFT);
+                        register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
+                    }
+                    alt_tab_timer = timer_read();
+                    tap_code(KC_TAB);
                 } else {
-                    tap_code16(LSA(KC_ESC));
+                    if (!is_alt_shift_tab_active) {
+                        is_alt_shift_tab_active = true;
+                        register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
+                        register_code(KC_LSFT);
+                    }
+                    alt_tab_timer = timer_read();
+                    tap_code(KC_TAB);
                 }
             } else if (is_master_right) {
                 if (clockwise) {
@@ -102,12 +122,26 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             }
             break;
         case 1:
-            // Alt escape / shift alt escape || Zoom in / out
+            // Alt tab / shift alt tab || Zoom in / out
+            // Windows: Alt tab (need to hold alt)
+            // MacOS: Command tab (need to hold command)
             if (is_slave_left) {
                 if (clockwise) {
-                    tap_code16(LALT(KC_ESC));
+                    if (!is_alt_tab_active) {
+                        is_alt_tab_active = true;
+                        unregister_code(KC_LSFT);
+                        register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
+                    }
+                    alt_tab_timer = timer_read();
+                    tap_code(KC_TAB);
                 } else {
-                    tap_code16(LSA(KC_ESC));
+                    if (!is_alt_shift_tab_active) {
+                        is_alt_shift_tab_active = true;
+                        register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
+                        register_code(KC_LSFT);
+                    }
+                    alt_tab_timer = timer_read();
+                    tap_code(KC_TAB);
                 }
             } else if (is_master_right) {
                 if (clockwise) {
@@ -359,6 +393,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
     }
     return true;
+};
+
+void matrix_scan_user(void) {
+    // ALT key hold timer
+    if (is_alt_tab_active | is_alt_shift_tab_active) {
+        if (timer_elapsed(alt_tab_timer) > 300) {
+            unregister_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
+            unregister_code(KC_LSFT);
+            is_alt_tab_active       = false;
+            is_alt_shift_tab_active = false;
+        }
+    }
 };
 
 // END OF FILE
