@@ -54,11 +54,12 @@ bool should_process_keypress(void) {
 
 enum custom_keycodes {
     ALT_GUI = SAFE_RANGE,
+    ZOOM,
 };
 
-KEYCODE_STRING_NAMES_USER(KEYCODE_STRING_NAME(ALT_GUI), );
+KEYCODE_STRING_NAMES_USER(KEYCODE_STRING_NAME(ALT_GUI), KEYCODE_STRING_NAME(ZOOM), KEYCODE_STRING_NAME(KC_APP), );
 
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0] = LAYOUT_5x6_right(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_DEL, KC_TAB, KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS, KC_BSPC, LSFT_T(KC_A), LALT_T(KC_R), LGUI_T(KC_S), LCTL_T(KC_T), KC_G, KC_M, RCTL_T(KC_N), RGUI_T(KC_E), RALT_T(KC_I), RSFT_T(KC_O), KC_QUOT, KC_APP, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, DF(1), ALT_GUI, KC_LCTL, KC_LGUI, KC_HOME, KC_END, LGUI(KC_ESC), KC_LSFT, KC_SPC, KC_RSFT, KC_ENT, KC_LALT, KC_ENT, TT(2), TT(3), TT(3), TT(2)),
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0] = LAYOUT_5x6_right(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_DEL, KC_TAB, KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS, KC_BSPC, LSFT_T(KC_A), LALT_T(KC_R), LGUI_T(KC_S), LCTL_T(KC_T), KC_G, KC_M, RCTL_T(KC_N), RGUI_T(KC_E), RALT_T(KC_I), RSFT_T(KC_O), KC_QUOT, KC_APP, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, DF(1), ALT_GUI, KC_LCTL, KC_LGUI, KC_HOME, KC_END, ZOOM, KC_LSFT, KC_SPC, KC_RSFT, KC_ENT, KC_LALT, KC_ENT, TT(2), TT(3), TT(3), TT(2)),
                                                               [1] = LAYOUT_5x6_right(KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_TRNS, KC_TRNS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_TRNS, KC_TRNS, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, DF(0), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
                                                               [2] = LAYOUT_5x6_right(QK_REBOOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR, KC_INS, KC_SCRL, KC_PAUS, KC_NUM, QK_BOOTLOADER, KC_TRNS, KC_F1, KC_F2, KC_F3, KC_F4, KC_TRNS, KC_GRV, KC_MINS, KC_EQL, KC_LBRC, KC_RBRC, KC_TRNS, KC_TRNS, KC_F5, KC_F6, KC_F7, KC_F8, KC_TRNS, ALT_GUI, KC_LEFT, KC_UP, KC_DOWN, KC_RGHT, KC_TRNS, EE_CLR, KC_F9, KC_F10, KC_F11, KC_F12, AU_TOGG, KC_TILD, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, DB_TOGG, KC_MUTE, KC_TRNS, KC_TRNS, KC_PGUP, KC_PGDN, KC_MEDIA_PLAY_PAUSE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
                                                               [3] = LAYOUT_5x6_right(KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, MS_BTN4, MS_BTN5, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, SNIPING_MODE, DRAGSCROLL_MODE, KC_TRNS, KC_TRNS, MS_BTN1, MS_BTN3, MS_BTN2, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, LCTL(KC_A), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, QK_BOOTLOADER, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS)};
@@ -112,10 +113,24 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
                 }
             } else if (is_master_right) {
                 // Windows: Magnifier - Windows plus/minus sign
+                // MacOS: Zoom - Option (Alt) Command plus/minus sign | Need to enable "Use keyboard shortcuts to zoom"
+                // Linux: Zoom (Gnome) - Super Alt plus/minus sign
                 if (clockwise) {
-                    tap_code16(LGUI(KC_KP_PLUS));
+                    if (current_os == OS_WINDOWS) {
+                        tap_code16(LGUI(KC_KP_PLUS));
+                    } else if (current_os == OS_LINUX) {
+                        tap_code16(LAG(KC_KP_PLUS));
+                    } else if (current_os == OS_MACOS) {
+                        tap_code16(LCA(KC_KP_PLUS));
+                    }
                 } else {
-                    tap_code16(LGUI(KC_KP_MINUS));
+                    if (current_os == OS_WINDOWS) {
+                        tap_code16(LGUI(KC_KP_MINUS));
+                    } else if (current_os == OS_LINUX) {
+                        tap_code16(LAG(KC_KP_MINUS));
+                    } else if (current_os == OS_MACOS) {
+                        tap_code16(LCA(KC_KP_MINUS));
+                    }
                 }
             }
             break;
@@ -140,10 +155,24 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
                 }
             } else if (is_master_right) {
                 // Windows: Magnifier - Windows plus/minus sign
+                // MacOS: Zoom - Option (Alt) Command plus/minus sign | Need to enable "Use keyboard shortcuts to zoom"
+                // Linux: Zoom (Gnome) - Super Alt plus/minus sign
                 if (clockwise) {
-                    tap_code16(LGUI(KC_KP_PLUS));
+                    if (current_os == OS_WINDOWS) {
+                        tap_code16(LGUI(KC_KP_PLUS));
+                    } else if (current_os == OS_LINUX) {
+                        tap_code16(LAG(KC_KP_PLUS));
+                    } else if (current_os == OS_MACOS) {
+                        tap_code16(LCA(KC_KP_PLUS));
+                    }
                 } else {
-                    tap_code16(LGUI(KC_KP_MINUS));
+                    if (current_os == OS_WINDOWS) {
+                        tap_code16(LGUI(KC_KP_MINUS));
+                    } else if (current_os == OS_LINUX) {
+                        tap_code16(LAG(KC_KP_MINUS));
+                    } else if (current_os == OS_MACOS) {
+                        tap_code16(LCA(KC_KP_MINUS));
+                    }
                 }
             }
             break;
@@ -375,7 +404,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     switch (keycode) {
         case ALT_GUI:
-            // When keycode is pressed
             if (record->event.pressed) {
                 if (current_os == OS_WINDOWS || current_os == OS_LINUX) {
                     // Windows | Open Task View
@@ -386,6 +414,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             break;
+        case ZOOM:
+            if (record->event.pressed) {
+                if (current_os == OS_WINDOWS) {
+                    // Windows | Cancel Magnifier
+                    tap_code16(LGUI(KC_ESC));
+                } else if (current_os == OS_LINUX) {
+                    // Linux | Toggle Zoom (Gnome)
+                    tap_code16(LAG(KC_8));
+                } else if (current_os == OS_MACOS) {
+                    // MacOS | Toggle Zoom
+                    tap_code16(LCA(KC_8));
+                }
+            }
     }
     return true;
 };
