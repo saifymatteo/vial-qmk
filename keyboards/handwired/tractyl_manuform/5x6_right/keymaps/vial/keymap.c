@@ -324,23 +324,6 @@ bool oled_task_user(void) {
             default:
                 oled_write_ln("Undefined", false);
         }
-
-        // Render keyboard state
-        led_t state = host_keyboard_led_state();
-        oled_set_cursor(8, 3);
-        if (state.caps_lock) {
-            oled_write_ln("Caps Lock", false);
-        } else if (state.num_lock) {
-            oled_write_ln("Num Lock", false);
-        } else if (state.scroll_lock) {
-            oled_write_ln("Scroll Lck", false);
-        } else if (state.compose) {
-            oled_write_ln("Compose", false);
-        } else if (state.kana) {
-            oled_write_ln("Kana", false);
-        } else {
-            oled_advance_page(true);
-        }
     } else {
         // Render bongo cat
         if (timer_elapsed32(animation_timer) > ANIMATION_FRAME_DURATION) {
@@ -390,6 +373,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         sprintf(text_row_col, "R%02d-C%d", row, column);
         oled_set_cursor(0, 3);
         oled_write_ln(text_row_col, false);
+
+        // Render current key name
+        oled_set_cursor(8, 3);
+        oled_write_ln(get_keycode_string(keycode), false);
 
         // Render keyboard tap, switch back the row/column on master side
         bool is_master = row >= 6;
