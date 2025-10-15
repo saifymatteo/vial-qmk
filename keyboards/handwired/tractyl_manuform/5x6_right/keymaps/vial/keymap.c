@@ -227,6 +227,9 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 char text_wpm[10];
 char text_row_col[13];
 
+// Clear keycode timer;
+uint16_t keycode_timer = 0;
+
 // Keyboard Matrix display
 #define MATRIX_DISPLAY_X 36
 #define MATRIX_DISPLAY_Y 18
@@ -324,6 +327,12 @@ bool oled_task_user(void) {
             default:
                 oled_write_ln("Undefined", false);
         }
+
+        // Clear keycodes text (Row/Column + Keycodes)
+        if (timer_elapsed(keycode_timer) > 1000) {
+            oled_set_cursor(0, 3);
+            oled_advance_page(true);
+        }
     } else {
         // Render bongo cat
         if (timer_elapsed32(animation_timer) > ANIMATION_FRAME_DURATION) {
@@ -377,6 +386,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // Render current key name
         oled_set_cursor(8, 3);
         oled_write_ln(get_keycode_string(keycode), false);
+
+        // Update timer
+        keycode_timer = timer_read();
 
         // Render keyboard tap, switch back the row/column on master side
         bool is_master = row >= 6;
