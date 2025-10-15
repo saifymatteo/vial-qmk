@@ -328,10 +328,26 @@ bool oled_task_user(void) {
                 oled_write_ln("Undefined", false);
         }
 
+        // Render keyboard state
+        // else,
         // Clear keycodes text (Row/Column + Keycodes)
-        if (timer_elapsed(keycode_timer) > 1000) {
-            oled_set_cursor(0, 3);
-            oled_advance_page(true);
+        led_t state = host_keyboard_led_state();
+        oled_set_cursor(8, 3);
+        if (state.caps_lock) {
+            oled_write_ln("Caps Lock", false);
+        } else if (state.num_lock) {
+            oled_write_ln("Num Lock", false);
+        } else if (state.scroll_lock) {
+            oled_write_ln("Scroll Lck", false);
+        } else if (state.compose) {
+            oled_write_ln("Compose", false);
+        } else if (state.kana) {
+            oled_write_ln("Kana", false);
+        } else {
+            if (timer_elapsed(keycode_timer) > 1000) {
+                oled_set_cursor(0, 3);
+                oled_advance_page(true);
+            }
         }
     } else {
         // Render bongo cat
