@@ -11,22 +11,9 @@
 
 // ---------------- INITIALISATION --------------------------------------------------------------
 
-os_variant_t current_os = OS_UNSURE;
-
 uint32_t cancel_haptic(uint32_t trigger_time, void *cb_arg) {
     gpio_write_pin_low(GP13);
     return 0;
-}
-
-uint32_t custom_os_settings(uint32_t trigger_time, void *cb_arg) {
-    current_os        = detected_host_os();
-    uint16_t retry_ms = 500;
-
-    if (current_os != OS_UNSURE) {
-        retry_ms = 0;
-    }
-
-    return retry_ms;
 }
 
 void keyboard_pre_init_user(void) {
@@ -40,9 +27,6 @@ void keyboard_post_init_user(void) {
     // debug_matrix = true;
     // debug_keyboard = true;
     // debug_mouse = true;
-
-    // Register deferred callback for OS Detection
-    defer_exec(1000, custom_os_settings, NULL);
 }
 
 // Sync actions from master to slave
@@ -76,6 +60,8 @@ uint16_t alt_tab_timer           = 0;
 bool encoder_update_user(uint8_t index, bool clockwise) {
     bool is_master_right = index == 1; // Master (right) encoder
     bool is_slave_left   = index == 0; // Slave (left) encoder
+
+    os_variant_t current_os = detected_host_os();
 
     if (is_slave_left) {
         if (clockwise) {
@@ -291,7 +277,7 @@ bool oled_task_user(void) {
 
         // Render OS
         oled_set_cursor(8, 1);
-        switch (current_os) {
+        switch (detected_host_os()) {
             case OS_LINUX:
                 oled_write_ln("OS : Linux", false);
                 break;
@@ -363,6 +349,8 @@ bool oled_task_user(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    os_variant_t current_os = detected_host_os();
+
     // Debug keycodes
     printf("Key: %s\n", get_keycode_string(keycode));
     switch (current_os) {
@@ -450,7 +438,7 @@ void matrix_scan_user(void) {
     // ALT key hold timer
     if (is_alt_tab_active | is_alt_shift_tab_active) {
         if (timer_elapsed(alt_tab_timer) > 500) {
-            unregister_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
+            unregister_code(detected_host_os() == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
             is_alt_tab_active       = false;
             is_alt_shift_tab_active = false;
         }
