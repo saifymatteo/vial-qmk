@@ -1,70 +1,334 @@
 /*
-Copyright 2025 saifymatteo <dev@saifulmashuri.com>
-*/
+ * Copyright 2025 saifymatteo <dev@saifulmashuri.com>
+ */
 
 #include QMK_KEYBOARD_H
+#include "os_detection.h"
 
 #if __has_include("keymap.h")
 #    include "keymap.h"
 #endif
 
-#ifdef OS_DETECTION_ENABLE
-#    include "os_detection.h"
+// ---------------- INITIALISATION --------------------------------------------------------------
 
-#ifdef OS_DETECTION_ENABLE
-#    include "os_detection.h"
+void keyboard_post_init_user(void) {
+    // Enable console debug
+    debug_enable = true;
+    // debug_matrix = true;
+    // debug_keyboard = true;
+    // debug_mouse = true;
+}
 
-os_variant_t current_os = OS_UNSURE;
+// ---------------- LAYER --------------------------------------------------------------
+
+enum custom_keycodes {
+    ALT_GUI = SAFE_RANGE,
+};
+
+KEYCODE_STRING_NAMES_USER(KEYCODE_STRING_NAME(ALT_GUI), KEYCODE_STRING_NAME(KC_APP), );
+
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0] = LAYOUT(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_DEL, KC_TAB, KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS, KC_BSPC, KC_A, KC_R, KC_S, KC_T, KC_G, KC_M, KC_N, KC_E, KC_I, KC_O, KC_QUOT, KC_APP, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, DF(1), KC_LCTL, KC_LGUI, KC_LSFT, KC_SPC, LALT_T(KC_ENT), TT(2), TT(2), RALT_T(KC_ENT), KC_SPC, KC_RSFT, KC_HOME, KC_END, ALT_GUI),
+                                                              [1] = LAYOUT(KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_TRNS, KC_TRNS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_TRNS, KC_TRNS, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, DF(0), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
+                                                              [2] = LAYOUT(QK_REBOOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR, KC_INS, KC_TRNS, KC_TRNS, KC_TRNS, QK_BOOTLOADER, KC_TRNS, KC_F1, KC_F2, KC_F3, KC_F4, KC_TRNS, KC_GRV, KC_MINS, KC_EQL, KC_LBRC, KC_RBRC, KC_TRNS, KC_TRNS, KC_F5, KC_F6, KC_F7, KC_F8, KC_TRNS, ALT_GUI, KC_LEFT, KC_UP, KC_DOWN, KC_RGHT, KC_TRNS, EE_CLR, KC_F9, KC_F10, KC_F11, KC_F12, AU_TOGG, KC_TILD, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, DB_TOGG, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MUTE)};
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    oled_clear();
+    return state;
+}
+
+// ---------------- ENCODER --------------------------------------------------------------
+
+// Alt (Windows) / Command (MacOS)
+// Taken from [reddit](https://www.reddit.com/r/MechanicalKeyboards/comments/s52e51/added_alttab_to_my_rotary_encoder_on_my_qmk_board/)
+bool     is_alt_tab_active       = false;
+bool     is_alt_shift_tab_active = false;
+uint16_t alt_tab_timer           = 0;
+
+// Note: current keyboard and RP2040 does not support ENCODER_MAP_ENABLE
+bool encoder_update_user(uint8_t index, bool clockwise) {
+    os_variant_t current_os = detected_host_os();
+
+    if (clockwise) {
+        print("Slave encoder: clockwise\n");
+    } else {
+        print("Slave encoder: counter clockwise\n");
+    }
+
+    switch (get_highest_layer(layer_state | default_layer_state)) {
+        case 0:
+            // Alt tab / shift alt tab
+            // Windows: Alt tab (need to hold alt)
+            // MacOS: Command tab (need to hold command)
+            register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
+            if (clockwise) {
+                if (!is_alt_tab_active) {
+                    is_alt_tab_active = true;
+                }
+                alt_tab_timer = timer_read();
+                tap_code(KC_TAB);
+            } else {
+                if (!is_alt_shift_tab_active) {
+                    is_alt_shift_tab_active = true;
+                }
+                alt_tab_timer = timer_read();
+                tap_code16(LSFT(KC_TAB));
+            }
+            break;
+        case 1:
+            // Alt tab / shift alt tab
+            // Windows: Alt tab (need to hold alt)
+            // MacOS: Command tab (need to hold command)
+            register_code(current_os == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
+            if (clockwise) {
+                if (!is_alt_tab_active) {
+                    is_alt_tab_active = true;
+                }
+                alt_tab_timer = timer_read();
+                tap_code(KC_TAB);
+            } else {
+                if (!is_alt_shift_tab_active) {
+                    is_alt_shift_tab_active = true;
+                }
+                alt_tab_timer = timer_read();
+                tap_code16(LSFT(KC_TAB));
+            }
+            break;
+        case 2:
+            // Volume up / down
+            if (clockwise) {
+                tap_code(KC_VOLU);
+            } else {
+                tap_code(KC_VOLD);
+            }
+            break;
+    }
+
+    return false;
+}
+
+// ---------------- OLED --------------------------------------------------------------
+
+// Keyboard Matrix. Taken from [github](https://github.com/vuon0029/qmk/tree/master/keyboards/mechwild/mercutio/keymaps/dracutio)
+// Bongo cat OLED. Taken from [github](https://github.com/nwii/oledbongocat)
+
+// Custom animation guide:
+// 1. Get a any video or gif
+// 2. To convert video to gif, use this: `ffmpeg -i <video-file> -vf "fps=10" -loop 0 <gif-output>`
+// 3. Convert from Gif. [github](https://github.com/AskMeAboutBirds/qmk-oled-animation-compressor)
+
+// WPM and row/column texts
+char text_wpm[10];
+char text_row_col[13];
+
+// Clear keycode timer;
+uint16_t keycode_timer = 0;
+
+// Keyboard Matrix display
+#define MATRIX_DISPLAY_X 36
+#define MATRIX_DISPLAY_Y 18
+
+// Keyboard Unit size
+#define GAP 1
+#define CUBE_NUMBER 3
+
+// Bongo cat
+#define TAP_FRAMES 2
+#define ANIMATION_FRAME_DURATION 200 // how long each frame lasts in ms
+#define ANIMATION_SIZE 1024          // number of bytes in array, minimize for adequate firmware size, max is 1024
+
+// Bongo cat variables
+uint32_t animation_timer   = 0;
+uint8_t  current_tap_frame = 0;
+
+// Bongo cat animations
+static const char PROGMEM bongo_tap[TAP_FRAMES][ANIMATION_SIZE] = {
+    {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x80, 0x80, 0x40, 0x40, 0x20, 0x20, 0x10, 0x08, 0x04, 0x02, 0x04, 0x08, 0x10, 0x10, 0x20, 0x20, 0x40, 0x40, 0x80, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0xc1, 0x01, 0x01, 0x02, 0x02, 0x04, 0x04, 0x04, 0x04, 0x02, 0x02, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x40, 0x80, 0x80, 0x40, 0x00, 0x00, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x64, 0x18, 0x04, 0x12, 0xc2, 0xca, 0x24, 0x88, 0xf0, 0x80, 0x80, 0x40, 0x40, 0x40, 0x40, 0x20, 0x20, 0x20, 0x20, 0x10, 0x10, 0x10, 0x10, 0x08, 0x08, 0x08, 0x08, 0x04, 0x04, 0x04, 0x04, 0x02, 0x02, 0x02, 0x02, 0x01, 0x01, 0x01, 0x01,
+     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xe0, 0x18, 0x06, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x83, 0x83, 0x40, 0x40, 0x40, 0x40, 0x20, 0x21, 0x21, 0x20, 0x10, 0x10, 0x10, 0x10, 0x08, 0x08, 0x08, 0x08, 0x04, 0x04, 0x04, 0x04, 0x02, 0x02, 0x02, 0x02, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x80, 0x80, 0x80, 0x40, 0x40, 0x40, 0x40, 0x20, 0x20, 0x20, 0x20, 0x10, 0x10, 0x10, 0x10, 0x08, 0x0f, 0x08, 0x08, 0x04, 0x04, 0x04, 0x04, 0x02, 0x04, 0x08, 0x10, 0x10, 0x20, 0x20, 0x40, 0x40, 0x41, 0x42, 0x24, 0x98, 0xc0, 0x88, 0x88, 0x8c, 0x9c, 0x1c, 0x1e, 0x0e, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+    {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x80, 0x80, 0x40, 0x40, 0x20, 0x20, 0x10, 0x08, 0x04, 0x02, 0x04, 0x08, 0x10, 0x10, 0x20, 0x20, 0x40, 0x40, 0x80, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0xc1, 0x01, 0x01, 0x02, 0x02, 0x04, 0x84, 0x44, 0x44, 0x42, 0x82, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x40, 0x80, 0x80, 0x40, 0x00, 0x00, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x04, 0x04, 0x08, 0x08, 0x10, 0x20, 0x40, 0x80, 0x80, 0x80, 0x80, 0x40, 0x40, 0x40, 0x40, 0x20, 0x20, 0x20, 0x20, 0x10, 0x10, 0x10, 0x10, 0x08, 0x08, 0x08, 0x08, 0x04, 0x04, 0x04, 0x04, 0x02, 0x02, 0x02, 0x02, 0x01, 0x01, 0x01, 0x01,
+     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xe0, 0x18, 0x06, 0x01, 0x00, 0x00, 0x0c, 0x03, 0x00, 0x02, 0x18, 0x19, 0x00, 0x05, 0xfe, 0x80, 0x83, 0x83, 0x40, 0x40, 0x40, 0x40, 0x20, 0x21, 0x21, 0x20, 0x10, 0x10, 0x10, 0x10, 0x08, 0x08, 0x08, 0x08, 0x04, 0x04, 0x04, 0x04, 0x04, 0x08, 0x30, 0x40, 0x80, 0x80, 0x00, 0x00, 0x01, 0x86, 0x98, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x80, 0x80, 0x80, 0x40, 0x40, 0x40, 0x40, 0x20, 0x20, 0x20, 0x20, 0x10, 0x10, 0x10, 0x10, 0x08, 0x0f, 0x08, 0x08, 0x04, 0x04, 0x04, 0x04, 0x02, 0x02, 0x02, 0x02, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x0f, 0x0f, 0x07, 0x03, 0x03, 0x61, 0xf0, 0xf8, 0xfc, 0x60, 0x01, 0x01, 0x01, 0x3c, 0x78, 0xf8, 0xf0, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+};
+
+oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+    return OLED_ROTATION_180;
+}
+
+bool oled_task_user(void) {
+    uint8_t current_layer = get_highest_layer(layer_state | default_layer_state);
+
+    if (current_layer == 1) { // QWERTY layer
+        // Render bongo cat
+        if (timer_elapsed32(animation_timer) > ANIMATION_FRAME_DURATION) {
+            animation_timer = timer_read32();
+
+            current_tap_frame = (current_tap_frame + 1) % TAP_FRAMES;
+            oled_write_raw_P(bongo_tap[abs((TAP_FRAMES - 1) - current_tap_frame)], ANIMATION_SIZE);
+        }
+    } else {
+        // Render Keyboard Box
+        oled_set_cursor(0, 0);
+        for (uint8_t x = 0; x < MATRIX_DISPLAY_X; x++) {
+            oled_write_pixel(x, 0, true);
+        }
+        for (uint8_t y = 0; y < MATRIX_DISPLAY_Y; y++) {
+            oled_write_pixel(0, y, true);
+        }
+        for (uint8_t x = 0; x < MATRIX_DISPLAY_X; x++) {
+            oled_write_pixel(x, MATRIX_DISPLAY_Y, true);
+        }
+        for (uint8_t y = 0; y < MATRIX_DISPLAY_Y; y++) {
+            oled_write_pixel(MATRIX_DISPLAY_X, y, true);
+        }
+
+        // Render WPM text
+        oled_set_cursor(8, 0);
+        sprintf(text_wpm, "WPM: %03d", get_current_wpm());
+        oled_write_ln(text_wpm, false);
+
+        // Render OS
+        oled_set_cursor(8, 1);
+        switch (detected_host_os()) {
+            case OS_LINUX:
+                oled_write_ln("OS : Linux", false);
+                break;
+            case OS_WINDOWS:
+                oled_write_ln("OS : Windows", false);
+                break;
+            case OS_MACOS:
+                oled_write_ln("OS : MacOS", false);
+                break;
+            case OS_IOS:
+                oled_write_ln("OS : iOS", false);
+                break;
+            case OS_UNSURE:
+                oled_write_ln("OS : Unsure", false);
+                break;
+        }
+
+        // Render Layers
+        oled_set_cursor(8, 2);
+        switch (get_highest_layer(layer_state | default_layer_state)) {
+            case 0:
+                oled_write_ln("Colemak-DH", false);
+                break;
+            case 1:
+                oled_write_ln("QWERTY", false);
+                break;
+            case 2:
+                oled_write_ln("Functions", false);
+                break;
+            case 3:
+                oled_write_ln("Trackball", false);
+                break;
+            default:
+                oled_write_ln("Undefined", false);
+        }
+
+        // Render keyboard state
+        // else,
+        // Clear keycodes text (Row/Column + Keycodes)
+        led_t state = host_keyboard_led_state();
+        oled_set_cursor(8, 3);
+        if (state.caps_lock) {
+            oled_write_ln("Caps Lock", false);
+        } else if (state.num_lock) {
+            oled_write_ln("Num Lock", false);
+        } else if (state.scroll_lock) {
+            oled_write_ln("Scroll Lck", false);
+        } else if (state.compose) {
+            oled_write_ln("Compose", false);
+        } else if (state.kana) {
+            oled_write_ln("Kana", false);
+        } else {
+            if (timer_elapsed(keycode_timer) > 1000) {
+                oled_set_cursor(0, 3);
+                oled_advance_page(true);
+            }
+        }
+    }
+
+    return false;
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    os_variant_t current_os = detected_host_os();
+
+    // Debug keycodes
+    printf("Key: %s\n", get_keycode_string(keycode));
+    switch (current_os) {
+        case OS_LINUX:
+            printf("OS: Linux\n");
+            break;
+        case OS_WINDOWS:
+            printf("OS: Windows\n");
+            break;
+        case OS_MACOS:
+            printf("OS: MacOS\n");
+            break;
+        case OS_IOS:
+            printf("OS: iOS\n");
+            break;
+        case OS_UNSURE:
+            printf("OS: Unsure\n");
+            break;
+    }
+
+    uint8_t current_layer = get_highest_layer(layer_state | default_layer_state);
+    if (current_layer != 1) {
+        // Row and column swapped based on config
+        // - Max row = 12
+        // - Max column = 6
+        uint8_t row    = record->event.key.row;
+        uint8_t column = record->event.key.col;
+
+        // Render Row and Column text
+        sprintf(text_row_col, "R%02d-C%d", row, column);
+        oled_set_cursor(0, 3);
+        oled_write_ln(text_row_col, false);
+
+        // Render current key name
+        oled_set_cursor(8, 3);
+        oled_write_ln(get_keycode_string(keycode), false);
+
+        // Update timer
+        keycode_timer = timer_read();
+
+        // Render keyboard tap, switch back the row/column on master side
+        for (uint8_t x = (CUBE_NUMBER * row) + GAP; x < CUBE_NUMBER * (row + 1); x++) {
+            for (uint8_t y = (CUBE_NUMBER * column) + GAP; y < CUBE_NUMBER * (column + 1); y++) {
+                oled_write_pixel(y, x, record->event.pressed);
+            }
+        }
+    }
+
     switch (keycode) {
-        case KC_F20:
-            // When keycode is pressed
+        case ALT_GUI:
             if (record->event.pressed) {
                 if (current_os == OS_WINDOWS || current_os == OS_LINUX) {
                     // Windows | Open Task View
-                    register_code(KC_LGUI);
-                    register_code(KC_TAB);
+                    tap_code16(LGUI(KC_TAB));
                 } else if (current_os == OS_MACOS) {
                     // MacOS | Open Mission Control
-                    register_code(0xc1);
+                    tap_code(KC_MISSION_CONTROL);
                 }
             }
-            clear_keyboard(); // Clear all modifiers and keys currently pressed
-            return false;
+            break;
     }
     return true;
 };
 
-uint32_t custom_os_settings(uint32_t trigger_time, void *cb_arg) {
-    current_os        = detected_host_os();
-    uint16_t retry_ms = 500;
-
-    if (current_os != OS_UNSURE) {
-        retry_ms = 0;
+void matrix_scan_user(void) {
+    // ALT key hold timer
+    if (is_alt_tab_active | is_alt_shift_tab_active) {
+        if (timer_elapsed(alt_tab_timer) > 500) {
+            unregister_code(detected_host_os() == OS_MACOS ? KC_LEFT_CTRL : KC_LALT);
+            is_alt_tab_active       = false;
+            is_alt_shift_tab_active = false;
+        }
     }
-
-    return retry_ms;
-}
-#endif
-
-void keyboard_post_init_user(void) {
-    debug_enable = true;
-    debug_matrix = true;
-
-#if defined(OS_DETECTION_ENABLE) && defined(DEFERRED_EXEC_ENABLE)
-    defer_exec(100, custom_os_settings, NULL);
-#endif
-}
-
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0] = LAYOUT(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_DEL, KC_TAB, KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS, KC_BSPC, KC_A, KC_R, KC_S, KC_T, KC_G, KC_M, KC_N, KC_E, KC_I, KC_O, KC_QUOT, KC_APP, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, DF(1), KC_LCTL, KC_LGUI, KC_LSFT, KC_SPC, KC_ENT, KC_LALT, TT(2), KC_ENT, KC_SPC, KC_RSFT, KC_HOME, KC_END),
-                                                              [1] = LAYOUT(KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_TRNS, KC_TRNS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_TRNS, KC_TRNS, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, DF(0), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
-                                                              [2] = LAYOUT(KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, AU_TOGG, KC_PSCR, KC_INS, KC_SCRL, KC_PAUS, KC_NUM, KC_TRNS, KC_TRNS, KC_F1, KC_F2, KC_F3, KC_F4, KC_VOLU, KC_GRV, KC_MINS, KC_EQL, KC_LBRC, KC_RBRC, KC_TRNS, KC_TRNS, KC_F5, KC_F6, KC_F7, KC_F8, KC_VOLD, KC_F20, KC_LEFT, KC_UP, KC_DOWN, KC_RGHT, KC_TRNS, KC_TRNS, KC_F9, KC_F10, KC_F11, KC_F12, KC_MUTE, KC_TILD, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS)};
-
-#if defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
-const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-
 };
-#endif // defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
 
 // END OF FILE
