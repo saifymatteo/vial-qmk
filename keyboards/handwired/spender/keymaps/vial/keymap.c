@@ -25,7 +25,7 @@ enum custom_keycodes {
     ALT_GUI = SAFE_RANGE,
 };
 
-KEYCODE_STRING_NAMES_USER(KEYCODE_STRING_NAME(ALT_GUI), KEYCODE_STRING_NAME(KC_APP), );
+KEYCODE_STRING_NAMES_USER(KEYCODE_STRING_NAME(ALT_GUI), KEYCODE_STRING_NAME(KC_APP), KEYCODE_STRING_NAME(KC_MUTE), KEYCODE_STRING_NAME(DB_TOGG));
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0] = LAYOUT(KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_DEL, KC_TAB, KC_Q, KC_W, KC_F, KC_P, KC_B, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS, KC_BSPC, KC_A, KC_R, KC_S, KC_T, KC_G, KC_M, KC_N, KC_E, KC_I, KC_O, KC_QUOT, KC_APP, KC_Z, KC_X, KC_C, KC_D, KC_V, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH, DF(1), KC_LCTL, KC_LGUI, KC_LSFT, KC_SPC, LALT_T(KC_ENT), TT(2), TT(2), RALT_T(KC_ENT), KC_SPC, KC_RSFT, KC_HOME, KC_END, ALT_GUI),
                                                               [1] = LAYOUT(KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_TRNS, KC_TRNS, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_TRNS, KC_TRNS, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, DF(0), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
@@ -44,7 +44,7 @@ bool     is_alt_tab_active       = false;
 bool     is_alt_shift_tab_active = false;
 uint16_t alt_tab_timer           = 0;
 
-// Note: current keyboard and RP2040 does not support ENCODER_MAP_ENABLE
+// Note: disable ENCODER_MAP_ENABLE for custom encoder handling
 bool encoder_update_user(uint8_t index, bool clockwise) {
     os_variant_t current_os = detected_host_os();
 
@@ -210,7 +210,7 @@ bool oled_task_user(void) {
 
         // Render Layers
         oled_set_cursor(8, 2);
-        switch (get_highest_layer(layer_state | default_layer_state)) {
+        switch (current_layer) {
             case 0:
                 oled_write_ln("Colemak-DH", false);
                 break;
@@ -219,9 +219,6 @@ bool oled_task_user(void) {
                 break;
             case 2:
                 oled_write_ln("Functions", false);
-                break;
-            case 3:
-                oled_write_ln("Trackball", false);
                 break;
             default:
                 oled_write_ln("Undefined", false);
@@ -279,8 +276,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     uint8_t current_layer = get_highest_layer(layer_state | default_layer_state);
     if (current_layer != 1) {
         // Row and column swapped based on config
-        // - Max row = 12
-        // - Max column = 6
+        // - Max row = 5 + 1 encoder row
+        // - Max column = 12
         uint8_t row    = record->event.key.row;
         uint8_t column = record->event.key.col;
 
